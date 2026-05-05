@@ -408,6 +408,40 @@
 	desc = "You've been dead for some time.. your body is finally starting to give out on you."
 	icon_state = "rotted_body"	//Temp holdover, no idea what I'd do for a new icon for this.
 
+// Permanent moodlet tracking how many times a player has been non-admin revived, and the cumulative stat loss.
+/datum/status_effect/debuff/revival_toll
+	id = "revival_toll"
+	alert_type = /atom/movable/screen/alert/status_effect/debuff/revival_toll
+	duration = -1
+	status_type = STATUS_EFFECT_UNIQUE
+	needs_processing = FALSE
+	var/revival_count = 1
+
+/datum/status_effect/debuff/revival_toll/proc/increment()
+	revival_count++
+	if(linked_alert)
+		linked_alert.desc = "Each return from death leaves its mark. You have cheated death [revival_count] time\s, and your body bears the cost."
+
+/datum/status_effect/debuff/revival_toll/on_apply()
+	. = ..()
+	if(linked_alert)
+		linked_alert.desc = "Each return from death leaves its mark. You have cheated death [revival_count] time\s, and your body bears the cost."
+
+/atom/movable/screen/alert/status_effect/debuff/revival_toll
+	name = "Death's Toll"
+	desc = "Each return from death leaves its mark. You have cheated death once, and your body bears the cost."
+	icon_state = "revived"
+
+/atom/movable/screen/alert/status_effect/debuff/revival_toll/examine_ui(mob/user)
+	var/datum/status_effect/debuff/revival_toll/effect = attached_effect
+	var/list/inspec = list("----------------------")
+	inspec += "<br><span class='danger'><b>[name]</b></span>"
+	if(istype(effect))
+		inspec += "<br>Times returned from death: [effect.revival_count]"
+		inspec += "<br><span class='danger'>Permanent stat loss: -[effect.revival_count] to all stats</span>"
+	inspec += "<br>----------------------"
+	to_chat(user, "[inspec.Join()]")
+
 /datum/status_effect/debuff/dazed
 	id = "dazed"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/dazed
