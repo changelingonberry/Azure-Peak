@@ -925,9 +925,6 @@
 		to_chat(src, "<span class='italic'>Your memories of your final moments are hazy and fragmented.</span>")
 		. = TRUE
 		if(!admin_revive)
-			for(var/s in MOBSTATS)
-				change_stat(s, -1)
-			to_chat(src, span_danger("<b>The strain of returning from death has left a permanent mark upon you. (-1 to all stats)</b>"))
 			var/datum/status_effect/debuff/revival_toll/existing_toll = has_status_effect(/datum/status_effect/debuff/revival_toll)
 			if(existing_toll)
 				existing_toll.increment()

@@ -409,21 +409,35 @@
 	icon_state = "rotted_body"	//Temp holdover, no idea what I'd do for a new icon for this.
 
 // Permanent moodlet tracking how many times a player has been non-admin revived, and the cumulative stat loss.
+// effectedstats owns all the stat changes — removing this effect via admin commands will fully restore stats.
 /datum/status_effect/debuff/revival_toll
 	id = "revival_toll"
 	alert_type = /atom/movable/screen/alert/status_effect/debuff/revival_toll
 	duration = -1
 	status_type = STATUS_EFFECT_UNIQUE
 	needs_processing = FALSE
+	effectedstats = list(
+		STATKEY_STR = -1,
+		STATKEY_PER = -1,
+		STATKEY_INT = -1,
+		STATKEY_CON = -1,
+		STATKEY_WIL = -1,
+		STATKEY_SPD = -1,
+		STATKEY_LCK = -1
+	)
 	var/revival_count = 1
-
-/datum/status_effect/debuff/revival_toll/proc/increment()
-	revival_count++
-	if(linked_alert)
-		linked_alert.desc = "Each return from death leaves its mark. You have cheated death [revival_count] time\s, and your body bears the cost."
 
 /datum/status_effect/debuff/revival_toll/on_apply()
 	. = ..()
+	to_chat(owner, span_danger("<b>The strain of returning from death has left a permanent mark upon you. (-1 to all stats)</b>"))
+
+// Each additional revival: apply the -1 delta directly and record it in effectedstats so on_remove() undoes the full total.
+/datum/status_effect/debuff/revival_toll/proc/increment()
+	revival_count++
+	for(var/s in MOBSTATS)
+		effectedstats[s] -= 1
+		owner.change_stat(s, -1)
+	to_chat(owner, span_danger("<b>Death's toll grows heavier. (-1 to all stats, [revival_count] total revivals)</b>"))
 	if(linked_alert)
 		linked_alert.desc = "Each return from death leaves its mark. You have cheated death [revival_count] time\s, and your body bears the cost."
 
