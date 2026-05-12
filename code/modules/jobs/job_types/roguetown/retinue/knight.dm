@@ -88,7 +88,7 @@
 		STATKEY_STR = 3,//Heavy hitters. Less con/end, high strength.
 		STATKEY_INT = 3,
 		STATKEY_CON = 1,
-		STATKEY_WIL = 1
+		STATKEY_WIL = 0
 	)
 	subclass_skills = list(
 		/datum/skill/combat/polearms = SKILL_LEVEL_EXPERT, //Polearms are pretty much explicitly a two-handed weapon, so I gave them a polearm option.
@@ -183,6 +183,7 @@
 	)
 	if(H.mind)
 		SStreasury.grant_savings(ECONOMIC_UPPER_CLASS, H)
+		H.mind.AddSpell(new /datum/action/cooldown/spell/takeprotege)
 
 /datum/advclass/knight/footknight
 	name = "Foot Knight"
@@ -195,7 +196,7 @@
 		STATKEY_STR = 1,//Tanky, less strength, but high con/end.
 		STATKEY_INT = 1,
 		STATKEY_CON = 4,//If mercenaries can have this...
-		STATKEY_WIL = 3,
+		STATKEY_WIL = 2,
 		STATKEY_PER = 1
 	)
 	subclass_skills = list(
@@ -279,6 +280,7 @@
 	)
 	if(H.mind)
 		SStreasury.grant_savings(ECONOMIC_UPPER_CLASS, H)
+		H.mind.AddSpell(new /datum/action/cooldown/spell/takeprotege)
 
 /datum/advclass/knight/mountedknight
 	name = "Mounted Knight"
@@ -295,7 +297,7 @@
 		STATKEY_STR = 2,
 		STATKEY_INT = 2,
 		STATKEY_CON = 1,
-		STATKEY_WIL = 2,
+		STATKEY_WIL = 1,
 		STATKEY_PER = 2
 	)
 	subclass_skills = list(
@@ -404,6 +406,7 @@
 	)
 	if(H.mind)
 		SStreasury.grant_savings(ECONOMIC_UPPER_CLASS, H)
+		H.mind.AddSpell(new /datum/action/cooldown/spell/takeprotege)
 
 
 /datum/advclass/knight/irregularknight
@@ -416,7 +419,7 @@
 	subclass_stats = list(
 		STATKEY_STR = 1,
 		STATKEY_INT = 1,
-		STATKEY_WIL = 2,
+		STATKEY_WIL = 1,
 		STATKEY_SPD = 2,
 		STATKEY_PER = 1,
 		STATKEY_LCK = 1
@@ -533,6 +536,7 @@
 	)
 	if(H.mind)
 		SStreasury.grant_savings(ECONOMIC_UPPER_CLASS, H)
+		H.mind.AddSpell(new /datum/action/cooldown/spell/takeprotege)
 
 
 /datum/advclass/knight/knightchampion
@@ -553,7 +557,7 @@
 	subclass_stats = list(
 		STATKEY_STR = 2,
 		STATKEY_CON = 2,
-		STATKEY_WIL = 2,
+		STATKEY_WIL = 1,
 		STATKEY_INT = 2,
 		STATKEY_PER = 2,
 		STATKEY_LCK = 2
@@ -604,6 +608,7 @@
 	H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/order/takeaim)
 	H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/order/hold)
 	H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/order/onfeet)
+	H.mind.AddSpell(new /datum/action/cooldown/spell/takeprotege)
 	H.dna.species.soundpack_m = new /datum/voicepack/male/knight()
 
 	H.verbs |= list(

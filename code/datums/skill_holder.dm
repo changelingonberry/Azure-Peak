@@ -41,6 +41,18 @@
 /mob/proc/set_apprentice(mob/living/carbon/human/A)
 	ensure_skills().my_apprentice = A
 
+/mob/proc/get_knight_lord()
+	return ensure_skills().knight_lord
+
+/mob/proc/set_knight_lord(mob/living/carbon/human/M)
+	ensure_skills().knight_lord = M
+
+/mob/proc/get_squire()
+	return ensure_skills().my_squire
+
+/mob/proc/set_squire(mob/living/carbon/human/S)
+	ensure_skills().my_squire = S
+
 /datum/skill_holder
 	///our current host
 	var/mob/living/current
@@ -54,6 +66,10 @@
 	// This is used by the Take Apprentice spell.
 	var/mob/living/carbon/human/mentor = null
 	var/mob/living/carbon/human/my_apprentice = null
+	// Knight-Squire protégé bond. Independent of the trade-skill apprentice system above; a Squire
+	// may simultaneously be someone's trade apprentice and a Knight's protégé.
+	var/mob/living/carbon/human/knight_lord = null
+	var/mob/living/carbon/human/my_squire = null
 
 /datum/skill_holder/New()
 	. = ..()
