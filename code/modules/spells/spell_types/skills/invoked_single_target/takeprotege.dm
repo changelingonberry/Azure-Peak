@@ -142,6 +142,10 @@
 	if(QDELETED(partner))
 		squire_bond_break(knight_mob, squire_mob)
 		return
+	// Mood: knight is content while their living protégé is in view, regardless of turf type.
+	if(knight_mob.stat != DEAD && squire_mob.stat != DEAD && (squire_mob in view(7, get_turf(knight_mob))))
+		knight_mob.add_stress(/datum/stressevent/protege_nearby)
+	// Vigilance stat buff additionally requires town turf.
 	if(!squire_bond_buff_eligible(knight_mob, squire_mob))
 		return
 	squire_mob.apply_status_effect(/datum/status_effect/buff/protege_vigilance)
@@ -160,11 +164,17 @@
 
 
 /datum/stressevent/protege_dead
-	stressadd = 10
-	stressadd_per_extra_stack = 10
+	stressadd = 25
+	stressadd_per_extra_stack = 25
 	max_stacks = 5
 	timer = 30 MINUTES
 	desc = span_boldred("My protégé has fallen. I have failed in my duty.")
+
+/datum/stressevent/protege_nearby
+	stressadd = -2
+	timer = 5 MINUTES
+	desc = span_green("My protégé hasn't met Necra yet. Great!")
+
 
 
 // The squire's proximity buff. Mirrors /datum/status_effect/buff/guardbuffone (CON/WIL/SPD)
@@ -183,9 +193,11 @@
 		qdel(src)
 		return
 	// Refresh from the tick so the buff doesn't time out while standing still in town with the
-	// knight in view. Movement signals also refresh; either path is enough on its own.
+	// knight in view. Movement signals also refresh; either path is enough on its own. Refresh
+	// the knight's mood event from here too so a stationary pair doesn't lose the +2 mood.
 	if(squire_bond_buff_eligible(knight, owner))
 		refresh()
+		knight.add_stress(/datum/stressevent/protege_nearby)
 
 /datum/status_effect/buff/protege_vigilance/on_apply()
 	. = ..()
