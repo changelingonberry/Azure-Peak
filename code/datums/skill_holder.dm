@@ -53,6 +53,15 @@
 /mob/proc/set_squire(mob/living/carbon/human/S)
 	ensure_skills().my_squire = S
 
+// TRUE if src can read empath-only reveals on target. Anyone with TRAIT_EMPATH gets the global
+// version; a Knight gets it for free against their own bonded protégé and nobody else.
+/mob/proc/has_empath_for(mob/target)
+	if(HAS_TRAIT(src, TRAIT_EMPATH))
+		return TRUE
+	if(target && get_squire() == target)
+		return TRUE
+	return FALSE
+
 /datum/skill_holder
 	///our current host
 	var/mob/living/current

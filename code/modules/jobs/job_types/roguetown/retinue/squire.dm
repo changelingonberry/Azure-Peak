@@ -65,7 +65,6 @@
 		STATKEY_PER = 1,
 		STATKEY_CON = 1,
 		STATKEY_INT = 1,
-		STATKEY_LCK = -1,
 	)
 	subclass_skills = list(
 		/datum/skill/combat/maces = SKILL_LEVEL_NOVICE,
@@ -117,7 +116,6 @@
 		STATKEY_PER = 1,
 		STATKEY_CON = 1,
 		STATKEY_INT = 1,
-		STATKEY_LCK = -1,
 	)
 	subclass_skills = list(
 		/datum/skill/combat/maces = SKILL_LEVEL_JOURNEYMAN,
@@ -177,7 +175,6 @@
 		STATKEY_PER = 1,
 		STATKEY_CON = 1,
 		STATKEY_INT = 1,
-		STATKEY_LCK = -1,
 	)
 	subclass_skills = list(
 		/datum/skill/combat/bows = SKILL_LEVEL_JOURNEYMAN,
