@@ -8,11 +8,71 @@
 	dropshrink = 1
 	throw_range = 1
 	throwforce = 0
+	/// A hat/helmet currently sitting on the statue (right-click with a head item to add, right-click again to remove).
+	var/obj/item/clothing/head/hat
+	/// The name before any hat was added, restored on removal.
+	var/base_name
+	/// Vertical nudge (pixels) for the worn-hat overlay so it lines up with the statue's head.
+	var/hat_offset_y = 0
 
 /obj/item/chezz/Initialize()
 	. = ..()
+	base_name = name
 	// Must be carried with both hands.
 	AddComponent(/datum/component/two_handed, require_twohands = TRUE)
+
+/obj/item/chezz/attack_right(mob/user)
+	. = ..()
+	// A hat is already on the statue -> take it off.
+	if(hat)
+		remove_hat(user)
+		return TRUE
+	// Holding a head item -> put it on the statue.
+	var/obj/item/held = user.get_active_held_item()
+	if(istype(held, /obj/item/clothing/head))
+		add_hat(held, user)
+		return TRUE
+	return .
+
+/obj/item/chezz/proc/add_hat(obj/item/clothing/head/H, mob/user)
+	if(!user.transferItemToLoc(H, src))
+		return
+	hat = H
+	name = "[base_name] ([H.name])"
+	update_icon()
+	user.visible_message(span_notice("[user] sets [H] atop [src]."), span_notice("I set [H] atop [src]."))
+
+/obj/item/chezz/proc/remove_hat(mob/user)
+	var/obj/item/clothing/head/H = hat
+	hat = null
+	name = base_name
+	update_icon()
+	if(!H)
+		return
+	if(!user || !user.put_in_active_hand(H))
+		H.forceMove(get_turf(src))
+	if(user)
+		user.visible_message(span_notice("[user] takes [H] off [src]."), span_notice("I take [H] off [src]."))
+
+/obj/item/chezz/update_overlays()
+	. = ..()
+	if(!hat)
+		return
+	// The hat's south-facing worn ("on head") sprite, dropped on top of the statue.
+	var/mutable_appearance/worn = hat.build_worn_icon(default_layer = HEAD_LAYER, default_icon_file = 'icons/roguetown/clothing/onmob/head.dmi', female = FALSE)
+	if(!worn)
+		return
+	worn.layer = FLOAT_LAYER
+	worn.plane = FLOAT_PLANE
+	worn.dir = SOUTH
+	worn.pixel_y += hat_offset_y
+	. += worn
+
+/obj/item/chezz/Destroy()
+	if(hat)
+		hat.forceMove(get_turf(src))
+		hat = null
+	return ..()
 
 // --- White ---
 /obj/item/chezz/white
