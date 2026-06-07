@@ -40,7 +40,7 @@
 	hat = H
 	name = "[base_name] ([H.name])"
 	update_icon()
-	user.visible_message(span_notice("[user] sets [H] atop [src]."), span_notice("I set [H] atop [src]."))
+	user.visible_message(span_notice("[user] daintily sets [H] atop the [src]."), span_notice("I set [H] atop [src]."))
 
 /obj/item/chezz/proc/remove_hat(mob/user)
 	var/obj/item/clothing/head/H = hat
@@ -52,7 +52,7 @@
 	if(!user || !user.put_in_active_hand(H))
 		H.forceMove(get_turf(src))
 	if(user)
-		user.visible_message(span_notice("[user] takes [H] off [src]."), span_notice("I take [H] off [src]."))
+		user.visible_message(span_notice("[user] takes [H] off the [src]."), span_notice("I take [H] off [src]."))
 
 /obj/item/chezz/update_overlays()
 	. = ..()
@@ -239,31 +239,35 @@
 White moves first, then players alternate turns,
 moving one piece per turn. Capture by landing on
 an enemy piece; it is removed from the board.
-The goal is CHECKMATE: attacking the enemy king
-so it cannot escape capture. If a king is merely
+The goal is CHECKMATE: attacking the enemy duke (king) 
+so it cannot escape capture. If a duke is merely
 attacked it is in CHECK and must be made safe at
 once. A position with no legal move and no check
 is STALEMATE - a draw.
 
 -- SPECIAL MOVES --
-CASTLING: once per game, if neither the king nor
-the chosen rook has moved, the squares between
-them are empty, and the king is not in or moving
-through check - move the king two squares toward
-the rook, then place that rook on the far side of
-the king.
+CASTLING: Once per game, if neither the duke nor
+the chosen bailiff (rook) has moved, the squares between
+them are empty, and the duke is not in or moving
+through check - move the duke two squares toward
+the bailiff, then place that bailiff on the far side of
+the duke.
   +-------------------+      +-------------------+
-  | . . . . R . . K . |  ->  | . . . . . R K . . |
+  | B . . D . . . . . |  ->  | . D B . . . . . . |
+  +-------------------+      +-------------------+
+ 
+  +-------------------+      +-------------------+
+  | . . . . D . . . B |  ->  | . . . . . B D . . |
   +-------------------+      +-------------------+
 
-EN PASSANT: if an enemy pawn advances two squares
-and lands beside your pawn, on your very next turn
+EN PASSANT: If an enemy serf (pawn) advances two squares
+and lands beside your serf, on your very next turn
 only you may capture it as if it had moved one
 square, taking it diagonally.
 
-PROMOTION: a pawn reaching the far rank is swapped
-for a queen, rook, bishop, or knight of its color
-(usually a queen).
+PROMOTION: A serf reaching the far rank is exchanged 
+for a banneret (queen), magos (bishop(), saiga (knight), or bailiff of its color.
+
 
 Examine any statue to see how that piece moves."}
 	icon = 'modular/icons/obj/chezz.dmi'
