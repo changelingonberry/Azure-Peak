@@ -117,6 +117,118 @@
 	charge_required = FALSE
 	showsparkles = FALSE
 	invocations = null
-	invocation_type = INVOCATION_NONE
 	sound = 'sound/vo/mobs/wwolf/roar.ogg'
-	spell_requirements = NONE
+	spell_flags = SPELL_IGNORE_SPELLBLOCK
+
+/datum/action/cooldown/spell/ravage
+	name = "Ravage"
+	desc = "Requires an aggressive grab on a prone and living target. Savage your victim's throat with your jaws, forcing Dendor's Madness directly into their veins and converting them into a verevolf."
+	fluff_desc = "A curse spread not by moonlight alone, but by will. Where infection is a slow rot, Ravage is a dam burst — a torrent of Dendor's Madness poured directly into the blood of one already made helpless. Even the foulest of beasts reserve this act for the worthy, or the foolish. It is not mercy. It is recruitment."
+	button_icon_state = "bite"
+	charge_required = FALSE
+	click_to_activate = FALSE
+	primary_resource_type = SPELL_COST_STAMINA
+	primary_resource_cost = SPELLCOST_MAJOR_SKILL
+	cooldown_time = 5 MINUTES
+	spell_requirements = SPELL_REQUIRES_SAME_Z
+	spell_flags = SPELL_IGNORE_SPELLBLOCK
+	has_visual_effects = FALSE
+
+/datum/action/cooldown/spell/ravage/cast(atom/cast_on)
+	. = ..()
+	if(!ishuman(owner))
+		return FALSE
+
+	if(owner.pulling && ishuman(owner.pulling) && owner.grab_state >= GRAB_AGGRESSIVE)
+		throat_bite(owner.pulling, owner)
+		return TRUE
+
+	to_chat(owner, span_warning("I need an aggressive grab on a floored victim to Ravage them!"))
+	reset_spell_cooldown()
+	return FALSE
+
+/datum/action/cooldown/spell/ravage/proc/throat_bite(mob/living/carbon/human/target, mob/living/carbon/human/user)
+	var/tear_time = 10 SECONDS
+	var/inject_time = 10 SECONDS
+
+	if(target == user)
+		reset_spell_cooldown()
+		return
+	if(!iscarbon(target))
+		to_chat(user, span_info("This creature cannot bear Dendor's Madness."))
+		reset_spell_cooldown()
+		return
+	if(target.stat == DEAD)
+		to_chat(user, span_notice("They're dead."))
+		reset_spell_cooldown()
+		return
+	if(!target.Adjacent(user))
+		to_chat(user, span_info("I need to be next to [target] to Ravage them."))
+		reset_spell_cooldown()
+		return
+	if((target.mobility_flags & MOBILITY_STAND))
+		to_chat(user, span_info("My victim must be lying down."))
+		reset_spell_cooldown()
+		return
+	if(!target.can_werewolf())
+		to_chat(user, span_notice("Dendor's Madness finds no purchase in this one."))
+		reset_spell_cooldown()
+		return
+	if(HAS_TRAIT(target, TRAIT_BLACKBLOOD))
+		to_chat(user, span_notice("Dendor's Madness recoils from [target.p_their()] corrupted blood!"))
+		reset_spell_cooldown()
+		return
+
+	user.visible_message(span_alert("[user] pins [target] down and lunges for [target.p_their()] throat..."))
+
+	var/obj/item/bodypart/head = target.get_bodypart(BODY_ZONE_HEAD)
+	var/do_stage1 = head && !head.has_wound(/datum/wound/bite/large)
+
+	target.balloon_alert_to_viewers("<font color='#cc4400'>Ravaging..!</font>")
+	if(!HAS_TRAIT(target, TRAIT_NOPAIN))
+		target.emote("scream")
+
+	if(do_stage1)
+		jitter_channel(target, tear_time, 100, 300)
+		if(!do_after(user, tear_time, target = target))
+			return
+		if(head)
+			head.add_wound(/datum/wound/bite/large)
+		target.apply_damage(30, BRUTE, BODY_ZONE_HEAD)
+		playsound(user, 'sound/combat/wound_tear.ogg', 60, FALSE, 3)
+		user.visible_message(span_alert("[user] wrenches [user.p_their()] jaws into [target.p_their()] throat, tearing through the flesh!"))
+
+	jitter_channel(target, inject_time, do_stage1 ? 300 : 100, 500)
+	target.set_light(2, 2, 2, l_color = GLOW_COLOR_DENDOR)
+	user.visible_message(span_alert("[user] presses [user.p_their()] maw against [target.p_their()] wound, forcing Dendor's Madness into the blood..."))
+	if(!do_after(user, inject_time, target = target) && head && head.has_wound(/datum/wound/bite/large))
+		target.set_light(0)
+		return
+	target.set_light(0)
+
+	if(!target.Adjacent(user) || (target.mobility_flags & MOBILITY_STAND))
+		to_chat(user, span_warning("My victim got away before I could finish!"))
+		return
+
+	if(target.stat == DEAD || !iscarbon(target))
+		return
+
+	var/datum/antagonist/werewolf/wolfy = target.werewolf_check()
+	if(!wolfy)
+		to_chat(user, span_warning("The curse was rejected — [target] resists Dendor's Madness!"))
+		return
+
+	if(!HAS_TRAIT(target, TRAIT_NOPAIN))
+		target.emote("agony")
+	user.visible_message(span_alert("[user] tears free of [target.p_their()] throat, Dendor's Madness now burning through [target.p_their()] veins!"))
+	target.balloon_alert_to_viewers("<font color='#558d20'>Infected!</font>")
+	target.apply_damage(20, BRUTE, BODY_ZONE_HEAD)
+	target.flash_fullscreen("redflash3")
+	to_chat(target, span_danger("Something tears through my veins — burning, CHANGING ME FROM WITHIN!"))
+
+/datum/action/cooldown/spell/ravage/proc/jitter_channel(mob/living/target, duration, start_jitter, end_jitter)
+	var/interval = 14
+	var/steps = round(duration / interval)
+	for(var/i = 0; i < steps; i++)
+		var/jitteriness = start_jitter + (end_jitter - start_jitter) * i * 1.0 / max(steps - 1, 1)
+		addtimer(CALLBACK(target, TYPE_PROC_REF(/mob/living, do_jitter_animation), jitteriness), i * interval)

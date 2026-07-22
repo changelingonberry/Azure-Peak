@@ -146,7 +146,8 @@
 	W.AddSpell(new /obj/effect/proc_holder/spell/self/howl)
 	W.AddSpell(new /obj/effect/proc_holder/spell/self/claws)
 	W.AddSpell(new /obj/effect/proc_holder/spell/targeted/woundlick)
-	W.AddSpell(new /datum/action/cooldown/spell/repulse/werewolf)
+	W.mind.AddSpell(new /datum/action/cooldown/spell/repulse/werewolf)
+	W.mind.AddSpell(new /datum/action/cooldown/spell/ravage)
 	invisibility = oldinv
 
 /mob/living/carbon/human/proc/werewolf_untransform(dead,gibbed)
@@ -186,7 +187,8 @@
 	W.RemoveSpell(new /obj/effect/proc_holder/spell/self/howl)
 	W.RemoveSpell(new /obj/effect/proc_holder/spell/self/claws)
 	W.RemoveSpell(new /obj/effect/proc_holder/spell/targeted/woundlick)
-	W.RemoveSpell(new /datum/action/cooldown/spell/repulse/werewolf)
+	W.mind.RemoveSpell(new /datum/action/cooldown/spell/repulse/werewolf)
+	W.mind.RemoveSpell(new /datum/action/cooldown/spell/ravage)
 	W.regenerate_icons()
 
 	to_chat(W, span_userdanger("I return to my facade."))

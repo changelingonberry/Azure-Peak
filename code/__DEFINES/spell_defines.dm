@@ -22,6 +22,7 @@
 #define GLOW_COLOR_NOC "#9acdff" //Noc's lightbulb
 #define GLOW_COLOR_RAVOX "#7A1E30" //Ravox Crimson
 #define GLOW_COLOR_MALUM "#884610" //Malum Orange
+#define GLOW_COLOR_DENDOR "#558d20" //Dendor green
 
 //Gods - Ascendant
 #define GLOW_COLOR_GRAGGAR "#19345E" //Graggar Dark Blue
